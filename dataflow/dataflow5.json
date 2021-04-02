@@ -1,0 +1,60 @@
+{
+	"name": "dataflow5",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable12",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable12",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable13",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Aggregate1"
+				},
+				{
+					"name": "Aggregate2"
+				},
+				{
+					"name": "Join1"
+				},
+				{
+					"name": "Select1"
+				},
+				{
+					"name": "Join2"
+				},
+				{
+					"name": "Select2"
+				},
+				{
+					"name": "DerivedColumn1"
+				},
+				{
+					"name": "Select3"
+				}
+			],
+			"script": "source(output(\n\t\tEntry_ID as integer,\n\t\tState_Patient_Number as string,\n\t\tDate_Announced as date,\n\t\tAge_Bracket as integer,\n\t\tGender as string,\n\t\tDetected_City as string,\n\t\tDetected_District as string,\n\t\tDetected_State as string,\n\t\tState_code as string,\n\t\tNum_Cases as integer,\n\t\tCurrent_Status as string,\n\t\tContracted_from_Patient_Suspected as string,\n\t\tNotes as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource(output(\n\t\tEntry_ID as integer,\n\t\tState_Patient_Number as string,\n\t\tDate_Announced as date,\n\t\tAge_Bracket as integer,\n\t\tGender as string,\n\t\tDetected_City as string,\n\t\tDetected_District as string,\n\t\tDetected_State as string,\n\t\tState_code as string,\n\t\tNum_Cases as integer,\n\t\tCurrent_Status as string,\n\t\tContracted_from_Patient_Suspected as string,\n\t\tNotes as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source2\nsource1 aggregate(groupBy(Detected_State,\n\t\tDate_Announced),\n\t{Total Cases for State} = sum(Num_Cases)) ~> Aggregate1\nsource1 aggregate(groupBy(Detected_State,\n\t\tDetected_District,\n\t\tDate_Announced),\n\t{Total District Casess for Date and State} = sum(Num_Cases)) ~> Aggregate2\nsource2, Aggregate1 join(source2@Detected_State == Aggregate1@Detected_State\n\t&& source2@Date_Announced == Aggregate1@Date_Announced,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 select(mapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number,\n\t\tDate_Announced = source2@Date_Announced,\n\t\tAge_Bracket,\n\t\tGender,\n\t\tDetected_City,\n\t\tDetected_District,\n\t\tDetected_State = source2@Detected_State,\n\t\tState_code,\n\t\tNum_Cases,\n\t\tCurrent_Status,\n\t\tContracted_from_Patient_Suspected,\n\t\tNotes,\n\t\t{Total Cases for State}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1, Aggregate2 join(Select1@Detected_State == Aggregate2@Detected_State\n\t&& Select1@Detected_District == Aggregate2@Detected_District\n\t&& Select1@Date_Announced == Aggregate2@Date_Announced,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join2\nJoin2 select(mapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number,\n\t\tDate_Announced = Select1@Date_Announced,\n\t\tAge_Bracket,\n\t\tGender,\n\t\tDetected_City,\n\t\tDetected_District = Select1@Detected_District,\n\t\tDetected_State = Select1@Detected_State,\n\t\tState_code,\n\t\tNum_Cases,\n\t\tCurrent_Status,\n\t\tContracted_from_Patient_Suspected,\n\t\tNotes,\n\t\t{Total Cases for State},\n\t\t{Total District Casess for Date and State}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nSelect2 derive({Percent District Per Day Cases} = divide({Total District Casess for Date and State},{Total Cases for State})*100) ~> DerivedColumn1\nDerivedColumn1 select(mapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number,\n\t\tDate_Announced,\n\t\tAge_Bracket,\n\t\tGender,\n\t\tDetected_City,\n\t\tDetected_District,\n\t\tDetected_State,\n\t\tState_code,\n\t\tNum_Cases,\n\t\tCurrent_Status,\n\t\tContracted_from_Patient_Suspected,\n\t\tNotes,\n\t\tPercent_District_Per_Day_Cases = {Percent District Per Day Cases}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select3\nSelect3 sink(input(\n\t\tEntry_ID as integer,\n\t\tState_Patient_Number as string,\n\t\tDate_Announced as date,\n\t\tAge_Bracket as integer,\n\t\tGender as string,\n\t\tDetected_City as string,\n\t\tDetected_District as string,\n\t\tDetected_State as string,\n\t\tState_code as string,\n\t\tNum_Cases as integer,\n\t\tPercent_District_Per_Day_Cases as decimal(10,2),\n\t\tCurrent_Status as string,\n\t\tContracted_from_which_Patient_Suspected as string,\n\t\tNotes as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number,\n\t\tDate_Announced,\n\t\tAge_Bracket,\n\t\tGender,\n\t\tDetected_City,\n\t\tDetected_District,\n\t\tDetected_State,\n\t\tState_code,\n\t\tNum_Cases,\n\t\tPercent_District_Per_Day_Cases,\n\t\tCurrent_Status,\n\t\tContracted_from_which_Patient_Suspected = Contracted_from_Patient_Suspected,\n\t\tNotes\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+		}
+	}
+}

@@ -1,0 +1,73 @@
+{
+	"name": "AzureSqlTable12",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Incrementalsource",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Entry_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "State_Patient_Number",
+				"type": "varchar"
+			},
+			{
+				"name": "Date_Announced",
+				"type": "date"
+			},
+			{
+				"name": "Age_Bracket",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Gender",
+				"type": "varchar"
+			},
+			{
+				"name": "Detected_City",
+				"type": "varchar"
+			},
+			{
+				"name": "Detected_District",
+				"type": "varchar"
+			},
+			{
+				"name": "Detected_State",
+				"type": "varchar"
+			},
+			{
+				"name": "State_code",
+				"type": "varchar"
+			},
+			{
+				"name": "Num_Cases",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Current_Status",
+				"type": "varchar"
+			},
+			{
+				"name": "Contracted_from_Patient_Suspected",
+				"type": "varchar"
+			},
+			{
+				"name": "Notes",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Covid19"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

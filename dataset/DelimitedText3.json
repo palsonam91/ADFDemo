@@ -1,0 +1,193 @@
+{
+	"name": "DelimitedText3",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "state_wise_daily.csv",
+				"fileSystem": "adfdemo"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Date",
+				"type": "String"
+			},
+			{
+				"name": "Date_YMD",
+				"type": "String"
+			},
+			{
+				"name": "Status",
+				"type": "String"
+			},
+			{
+				"name": "TT",
+				"type": "String"
+			},
+			{
+				"name": "AN",
+				"type": "String"
+			},
+			{
+				"name": "AP",
+				"type": "String"
+			},
+			{
+				"name": "AR",
+				"type": "String"
+			},
+			{
+				"name": "AS",
+				"type": "String"
+			},
+			{
+				"name": "BR",
+				"type": "String"
+			},
+			{
+				"name": "CH",
+				"type": "String"
+			},
+			{
+				"name": "CT",
+				"type": "String"
+			},
+			{
+				"name": "DN",
+				"type": "String"
+			},
+			{
+				"name": "DD",
+				"type": "String"
+			},
+			{
+				"name": "DL",
+				"type": "String"
+			},
+			{
+				"name": "GA",
+				"type": "String"
+			},
+			{
+				"name": "GJ",
+				"type": "String"
+			},
+			{
+				"name": "HR",
+				"type": "String"
+			},
+			{
+				"name": "HP",
+				"type": "String"
+			},
+			{
+				"name": "JK",
+				"type": "String"
+			},
+			{
+				"name": "JH",
+				"type": "String"
+			},
+			{
+				"name": "KA",
+				"type": "String"
+			},
+			{
+				"name": "KL",
+				"type": "String"
+			},
+			{
+				"name": "LA",
+				"type": "String"
+			},
+			{
+				"name": "LD",
+				"type": "String"
+			},
+			{
+				"name": "MP",
+				"type": "String"
+			},
+			{
+				"name": "MH",
+				"type": "String"
+			},
+			{
+				"name": "MN",
+				"type": "String"
+			},
+			{
+				"name": "ML",
+				"type": "String"
+			},
+			{
+				"name": "MZ",
+				"type": "String"
+			},
+			{
+				"name": "NL",
+				"type": "String"
+			},
+			{
+				"name": "OR",
+				"type": "String"
+			},
+			{
+				"name": "PY",
+				"type": "String"
+			},
+			{
+				"name": "PB",
+				"type": "String"
+			},
+			{
+				"name": "RJ",
+				"type": "String"
+			},
+			{
+				"name": "SK",
+				"type": "String"
+			},
+			{
+				"name": "TN",
+				"type": "String"
+			},
+			{
+				"name": "TG",
+				"type": "String"
+			},
+			{
+				"name": "TR",
+				"type": "String"
+			},
+			{
+				"name": "UP",
+				"type": "String"
+			},
+			{
+				"name": "UT",
+				"type": "String"
+			},
+			{
+				"name": "WB",
+				"type": "String"
+			},
+			{
+				"name": "UN",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

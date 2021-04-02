@@ -1,0 +1,9 @@
+{
+	"name": "FactoryLearn1234",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "a3783349-43e7-432e-96f9-cda0d91f5783",
+		"tenantId": "51b9b0f4-c770-4bda-b901-4f667ef0448e"
+	}
+}

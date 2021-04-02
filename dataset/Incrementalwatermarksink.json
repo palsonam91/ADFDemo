@@ -1,0 +1,31 @@
+{
+	"name": "Incrementalwatermarksink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "IncrementalSink",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Incremental"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "TableName",
+				"type": "varchar"
+			},
+			{
+				"name": "Watermarkvalue",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "WaterMark"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,38 @@
+{
+	"name": "dataflow4",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable12",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumn1"
+				},
+				{
+					"name": "Select2"
+				},
+				{
+					"name": "Filter1"
+				}
+			],
+			"script": "source(output(\n\t\tEntry_ID as string,\n\t\t{State Patient Number} as string,\n\t\t{Date Announced} as string,\n\t\t{Age Bracket} as string,\n\t\tGender as string,\n\t\t{Detected City} as string,\n\t\t{Detected District} as string,\n\t\t{Detected State} as string,\n\t\t{State code} as string,\n\t\t{Num Cases} as string,\n\t\t{Current Status} as string,\n\t\t{Contracted from which Patient (Suspected)} as string,\n\t\tNotes as string,\n\t\tSource_1 as string,\n\t\tSource_2 as string,\n\t\tSource_3 as string,\n\t\tNationality as string,\n\t\t{Type of transmission} as string,\n\t\t{Status Change Date} as string,\n\t\t{Patient Number} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nFilter1 derive(Date_Anounced = coalesce(toDate({Date Announced},'MM/dd/yyyy'),toDate({Date Announced},'yyyy/MM/dd'),toDate({Date Announced},'dd/MM/yyyy'),toDate({Date Announced},'MMddyyyy'),toDate({Date Announced},'yyyyddMM'),toDate({Date Announced},'MMddyyyy'),toDate({Date Announced},'yyyyMMdd')),\n\t\tDetected_State_der = iif(isNull({Detected State}), 'NA', {Detected State}),\n\t\tDetected_District_der = iif(isNull({Detected District}), 'NA', {Detected District})) ~> DerivedColumn1\nDerivedColumn1 select(mapColumn(\n\t\tEntry_ID,\n\t\t{State Patient Number},\n\t\t{Age Bracket},\n\t\tGender,\n\t\t{Detected City},\n\t\t{State code},\n\t\t{Num Cases},\n\t\t{Current Status},\n\t\t{Contracted from which Patient (Suspected)},\n\t\tNotes,\n\t\tNationality,\n\t\tDate_Anounced,\n\t\tDetected_State_der,\n\t\tDetected_District_der\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nsource1 filter({Date Announced}!='NULL') ~> Filter1\nSelect2 sink(input(\n\t\tEntry_ID as integer,\n\t\tState_Patient_Number as string,\n\t\tDate_Announced as date,\n\t\tAge_Bracket as integer,\n\t\tGender as string,\n\t\tDetected_City as string,\n\t\tDetected_District as string,\n\t\tDetected_State as string,\n\t\tState_code as string,\n\t\tNum_Cases as integer,\n\t\tCurrent_Status as string,\n\t\tContracted_from_Patient_Suspected as string,\n\t\tNotes as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number = {State Patient Number},\n\t\tDate_Announced = Date_Anounced,\n\t\tAge_Bracket = {Age Bracket},\n\t\tGender,\n\t\tDetected_City = {Detected City},\n\t\tDetected_District = Detected_District_der,\n\t\tDetected_State = Detected_State_der,\n\t\tState_code = {State code},\n\t\tNum_Cases = {Num Cases},\n\t\tCurrent_Status = {Current Status},\n\t\tContracted_from_Patient_Suspected = {Contracted from which Patient (Suspected)},\n\t\tNotes\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+		}
+	}
+}

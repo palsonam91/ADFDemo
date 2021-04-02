@@ -1,0 +1,29 @@
+{
+	"name": "IncrementalConfig",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "IncrementalSink",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Incremental"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "TableName",
+				"type": "varchar"
+			},
+			{
+				"name": "NewTime",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "ConfigTable"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

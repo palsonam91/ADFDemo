@@ -1,0 +1,79 @@
+{
+	"name": "AzureSqlTable13",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "IncrementalSink",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Entry_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "State_Patient_Number",
+				"type": "varchar"
+			},
+			{
+				"name": "Date_Announced",
+				"type": "date"
+			},
+			{
+				"name": "Age_Bracket",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Gender",
+				"type": "varchar"
+			},
+			{
+				"name": "Detected_City",
+				"type": "varchar"
+			},
+			{
+				"name": "Detected_District",
+				"type": "varchar"
+			},
+			{
+				"name": "Detected_State",
+				"type": "varchar"
+			},
+			{
+				"name": "State_code",
+				"type": "varchar"
+			},
+			{
+				"name": "Num_Cases",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Percent_District_Per_Day_Cases",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "Current_Status",
+				"type": "varchar"
+			},
+			{
+				"name": "Contracted_from_which_Patient_Suspected",
+				"type": "varchar"
+			},
+			{
+				"name": "Notes",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Covid"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

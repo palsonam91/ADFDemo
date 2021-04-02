@@ -1,0 +1,35 @@
+{
+	"name": "dataflow6",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText3",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable14",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Unpivot1"
+				},
+				{
+					"name": "DerivedColumn1"
+				}
+			],
+			"script": "source(output(\n\t\tDate as string,\n\t\tDate_YMD as string,\n\t\tStatus as string,\n\t\tTT as string,\n\t\tAN as string,\n\t\tAP as string,\n\t\tAR as string,\n\t\tAS as string,\n\t\tBR as string,\n\t\tCH as string,\n\t\tCT as string,\n\t\tDN as string,\n\t\tDD as string,\n\t\tDL as string,\n\t\tGA as string,\n\t\tGJ as string,\n\t\tHR as string,\n\t\tHP as string,\n\t\tJK as string,\n\t\tJH as string,\n\t\tKA as string,\n\t\tKL as string,\n\t\tLA as string,\n\t\tLD as string,\n\t\tMP as string,\n\t\tMH as string,\n\t\tMN as string,\n\t\tML as string,\n\t\tMZ as string,\n\t\tNL as string,\n\t\tOR as string,\n\t\tPY as string,\n\t\tPB as string,\n\t\tRJ as string,\n\t\tSK as string,\n\t\tTN as string,\n\t\tTG as string,\n\t\tTR as string,\n\t\tUP as string,\n\t\tUT as string,\n\t\tWB as string,\n\t\tUN as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 unpivot(output(\n\t\tState as string,\n\t\tCases as string\n\t),\n\tungroupBy(Date,\n\t\tDate_YMD,\n\t\tStatus),\n\tlateral: false,\n\tignoreNullPivots: false) ~> Unpivot1\nUnpivot1 derive(Dates = toDate(Date,'yyyy-mm-dd')) ~> DerivedColumn1\nDerivedColumn1 sink(input(\n\t\tDates as date,\n\t\tDate_YMD as date,\n\t\tStatus as string,\n\t\tState as string,\n\t\tCases as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tDates = Date,\n\t\tDate_YMD,\n\t\tStatus,\n\t\tState,\n\t\tCases\n\t),\n\tdateFormat:'MM/dd/yyyy',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+		}
+	}
+}
