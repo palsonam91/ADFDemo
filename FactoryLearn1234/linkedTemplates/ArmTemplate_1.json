@@ -1,0 +1,1452 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "FactoryLearn1234"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable9')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Dept_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Dept_Name",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Department"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/IncrementalOrder')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Incrementalsource",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Incremental"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductID",
+						"type": "varchar"
+					},
+					{
+						"name": "CustomerID",
+						"type": "varchar"
+					},
+					{
+						"name": "UnitPrice",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 4
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "InsertDateTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "orders"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incrementalwatermarksink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "IncrementalSink",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Incremental"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "TableName",
+						"type": "varchar"
+					},
+					{
+						"name": "Watermarkvalue",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "WaterMark"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incrementalordersink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "IncrementalSink",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Incremental"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductID",
+						"type": "varchar"
+					},
+					{
+						"name": "CustomerID",
+						"type": "varchar"
+					},
+					{
+						"name": "UnitPrice",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 4
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "InsertDateTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": {
+						"value": "@{dataset().TableName}",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/IncrementalConfig')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "IncrementalSink",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Incremental"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "TableName",
+						"type": "varchar"
+					},
+					{
+						"name": "NewTime",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "ConfigTable"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable12')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Incrementalsource",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Entry_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "State_Patient_Number",
+						"type": "varchar"
+					},
+					{
+						"name": "Date_Announced",
+						"type": "date"
+					},
+					{
+						"name": "Age_Bracket",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Gender",
+						"type": "varchar"
+					},
+					{
+						"name": "Detected_City",
+						"type": "varchar"
+					},
+					{
+						"name": "Detected_District",
+						"type": "varchar"
+					},
+					{
+						"name": "Detected_State",
+						"type": "varchar"
+					},
+					{
+						"name": "State_code",
+						"type": "varchar"
+					},
+					{
+						"name": "Num_Cases",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Current_Status",
+						"type": "varchar"
+					},
+					{
+						"name": "Contracted_from_Patient_Suspected",
+						"type": "varchar"
+					},
+					{
+						"name": "Notes",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Covid19"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "raw_data24.csv",
+						"fileSystem": "adfdemo"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Entry_ID",
+						"type": "String"
+					},
+					{
+						"name": "State Patient Number",
+						"type": "String"
+					},
+					{
+						"name": "Date Announced",
+						"type": "String"
+					},
+					{
+						"name": "Age Bracket",
+						"type": "String"
+					},
+					{
+						"name": "Gender",
+						"type": "String"
+					},
+					{
+						"name": "Detected City",
+						"type": "String"
+					},
+					{
+						"name": "Detected District",
+						"type": "String"
+					},
+					{
+						"name": "Detected State",
+						"type": "String"
+					},
+					{
+						"name": "State code",
+						"type": "String"
+					},
+					{
+						"name": "Num Cases",
+						"type": "String"
+					},
+					{
+						"name": "Current Status",
+						"type": "String"
+					},
+					{
+						"name": "Contracted from which Patient (Suspected)",
+						"type": "String"
+					},
+					{
+						"name": "Notes",
+						"type": "String"
+					},
+					{
+						"name": "Source_1",
+						"type": "String"
+					},
+					{
+						"name": "Source_2",
+						"type": "String"
+					},
+					{
+						"name": "Source_3",
+						"type": "String"
+					},
+					{
+						"name": "Nationality",
+						"type": "String"
+					},
+					{
+						"name": "Type of transmission",
+						"type": "String"
+					},
+					{
+						"name": "Status Change Date",
+						"type": "String"
+					},
+					{
+						"name": "Patient Number",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable13')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "IncrementalSink",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Entry_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "State_Patient_Number",
+						"type": "varchar"
+					},
+					{
+						"name": "Date_Announced",
+						"type": "date"
+					},
+					{
+						"name": "Age_Bracket",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Gender",
+						"type": "varchar"
+					},
+					{
+						"name": "Detected_City",
+						"type": "varchar"
+					},
+					{
+						"name": "Detected_District",
+						"type": "varchar"
+					},
+					{
+						"name": "Detected_State",
+						"type": "varchar"
+					},
+					{
+						"name": "State_code",
+						"type": "varchar"
+					},
+					{
+						"name": "Num_Cases",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Percent_District_Per_Day_Cases",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "Current_Status",
+						"type": "varchar"
+					},
+					{
+						"name": "Contracted_from_which_Patient_Suspected",
+						"type": "varchar"
+					},
+					{
+						"name": "Notes",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Covid"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "state_wise_daily.csv",
+						"fileSystem": "adfdemo"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Date",
+						"type": "String"
+					},
+					{
+						"name": "Date_YMD",
+						"type": "String"
+					},
+					{
+						"name": "Status",
+						"type": "String"
+					},
+					{
+						"name": "TT",
+						"type": "String"
+					},
+					{
+						"name": "AN",
+						"type": "String"
+					},
+					{
+						"name": "AP",
+						"type": "String"
+					},
+					{
+						"name": "AR",
+						"type": "String"
+					},
+					{
+						"name": "AS",
+						"type": "String"
+					},
+					{
+						"name": "BR",
+						"type": "String"
+					},
+					{
+						"name": "CH",
+						"type": "String"
+					},
+					{
+						"name": "CT",
+						"type": "String"
+					},
+					{
+						"name": "DN",
+						"type": "String"
+					},
+					{
+						"name": "DD",
+						"type": "String"
+					},
+					{
+						"name": "DL",
+						"type": "String"
+					},
+					{
+						"name": "GA",
+						"type": "String"
+					},
+					{
+						"name": "GJ",
+						"type": "String"
+					},
+					{
+						"name": "HR",
+						"type": "String"
+					},
+					{
+						"name": "HP",
+						"type": "String"
+					},
+					{
+						"name": "JK",
+						"type": "String"
+					},
+					{
+						"name": "JH",
+						"type": "String"
+					},
+					{
+						"name": "KA",
+						"type": "String"
+					},
+					{
+						"name": "KL",
+						"type": "String"
+					},
+					{
+						"name": "LA",
+						"type": "String"
+					},
+					{
+						"name": "LD",
+						"type": "String"
+					},
+					{
+						"name": "MP",
+						"type": "String"
+					},
+					{
+						"name": "MH",
+						"type": "String"
+					},
+					{
+						"name": "MN",
+						"type": "String"
+					},
+					{
+						"name": "ML",
+						"type": "String"
+					},
+					{
+						"name": "MZ",
+						"type": "String"
+					},
+					{
+						"name": "NL",
+						"type": "String"
+					},
+					{
+						"name": "OR",
+						"type": "String"
+					},
+					{
+						"name": "PY",
+						"type": "String"
+					},
+					{
+						"name": "PB",
+						"type": "String"
+					},
+					{
+						"name": "RJ",
+						"type": "String"
+					},
+					{
+						"name": "SK",
+						"type": "String"
+					},
+					{
+						"name": "TN",
+						"type": "String"
+					},
+					{
+						"name": "TG",
+						"type": "String"
+					},
+					{
+						"name": "TR",
+						"type": "String"
+					},
+					{
+						"name": "UP",
+						"type": "String"
+					},
+					{
+						"name": "UT",
+						"type": "String"
+					},
+					{
+						"name": "WB",
+						"type": "String"
+					},
+					{
+						"name": "UN",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable14')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "targetdb",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Dates",
+						"type": "date"
+					},
+					{
+						"name": "Date_YMD",
+						"type": "date"
+					},
+					{
+						"name": "Status",
+						"type": "varchar"
+					},
+					{
+						"name": "State",
+						"type": "varchar"
+					},
+					{
+						"name": "Cases",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Daily_Cases_State"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable16')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "IncrementalSink",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SalesRep_Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SalesRep_Number",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SalesRep_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "SalesRep_Department",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Dim_SalesRep"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable15')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "IncrementalSink",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SalesRep_Number",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SalesRep_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "SalesRep_Department",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "STG_Sales_Rep"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Configdatasetsource",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Lookup1').output.value[0].Enabled,pipeline().parameters.Enabled)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureSqlSink"
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "CustomerSource",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "AzureSqlTable1",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"Enabled": {
+						"type": "Int",
+						"defaultValue": 1
+					}
+				},
+				"folder": {
+					"name": "First Set"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-03-17T21:02:54Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable5",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-03-20T20:29:25Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/IncrementalPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupOldWatermarkvalue",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select TableName,Watermarkvalue from dbo.WaterMark where TableName='@{pipeline().parameters.TableName}'",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Incrementalwatermarksink",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "LookupNewWatermarkvalue",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select  max(@{pipeline().parameters.NewTime}) as NewWatermarkvalue from @{pipeline().parameters.TableName}",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "IncrementalOrder",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "LookupOldWatermarkvalue",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "LookupNewWatermarkvalue",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select * from @{pipeline().parameters.TableName} where @{pipeline().parameters.NewTime}>'@{activity('LookupOldWatermarkvalue').output.firstRow.Watermarkvalue}' and @{pipeline().parameters.NewTime}<='@{activity('LookupNewWatermarkvalue').output.firstRow.NewWatermarkvalue}'",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "IncrementalOrder",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Incrementalordersink",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "set watermark",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[spsetwatermark]",
+							"storedProcedureParameters": {
+								"newtime": {
+									"value": {
+										"value": "@activity('LookupNewWatermarkvalue').output.firstRow.NewWatermarkvalue",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								},
+								"tablename": {
+									"value": {
+										"value": "@activity('LookupOldWatermarkvalue').output.firstRow.TableName",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "IncrementalSink",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"parameters": {
+					"TableName": {
+						"type": "string",
+						"defaultValue": "orders"
+					},
+					"NewTime": {
+						"type": "string",
+						"defaultValue": "InsertDateTime"
+					}
+				},
+				"folder": {
+					"name": "Incremental"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-03-23T21:08:21Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Incrementalwatermarksink')]",
+				"[concat(variables('factoryId'), '/datasets/IncrementalOrder')]",
+				"[concat(variables('factoryId'), '/datasets/Incrementalordersink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Second Set"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Datalakesourcedataset",
+								"type": "DatasetReference"
+							},
+							"name": "DataLake"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable6",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable3",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable4",
+								"type": "DatasetReference"
+							},
+							"name": "sink3"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ConditionalSplit1"
+						},
+						{
+							"name": "Lookup1"
+						},
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "Filter1"
+						}
+					],
+					"script": "source(output(\n\t\tInvoiceNo as string,\n\t\tStockCode as string,\n\t\tDescription as string,\n\t\tQuantity as short,\n\t\tInvoiceDate as timestamp,\n\t\tUnitPrice as double,\n\t\tCustomerID as short,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DataLake\nsource(output(\n\t\tCID as integer,\n\t\tName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nSelect1 split(UnitPrice>1 && UnitPrice<4,\n\tUnitPrice>3 && UnitPrice<4,\n\tdisjoint: true) ~> ConditionalSplit1@(stream1, stream2, Deafault)\nDataLake, source1 lookup(CustomerID == CID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> Lookup1\nFilter1 select(mapColumn(\n\t\tInvoiceNo,\n\t\tStockCode,\n\t\tDescription,\n\t\tQuantity,\n\t\tInvoiceDate,\n\t\tUnitPrice,\n\t\tCustomerID,\n\t\tCountry,\n\t\tCID,\n\t\tCustomer_Name = Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nLookup1 filter(Quantity>4) ~> Filter1\nConditionalSplit1@stream1 sink(input(\n\t\tInvoiceNo as integer,\n\t\tStockCode as string,\n\t\tQuantity as integer,\n\t\tInvoiceDate as timestamp,\n\t\tUnitPrice as double,\n\t\tCustomerID as integer,\n\t\tCountry as string,\n\t\tDescription as string,\n\t\tCutomer_Name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tInvoiceNo,\n\t\tStockCode,\n\t\tQuantity,\n\t\tInvoiceDate,\n\t\tUnitPrice,\n\t\tCustomerID,\n\t\tCountry,\n\t\tDescription,\n\t\tCutomer_Name = Customer_Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1\nConditionalSplit1@stream2 sink(input(\n\t\tInvoiceNo as integer,\n\t\tStockCode as string,\n\t\tQuantity as integer,\n\t\tInvoiceDate as timestamp,\n\t\tUnitPrice as double,\n\t\tCustomerID as integer,\n\t\tCountry as string,\n\t\tDescription as string,\n\t\tCutomer_Name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tInvoiceNo,\n\t\tStockCode,\n\t\tQuantity,\n\t\tInvoiceDate,\n\t\tUnitPrice,\n\t\tCustomerID,\n\t\tCountry,\n\t\tDescription,\n\t\tCutomer_Name = Customer_Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink2\nConditionalSplit1@Deafault sink(input(\n\t\tInvoiceNo as integer,\n\t\tStockCode as string,\n\t\tQuantity as integer,\n\t\tInvoiceDate as timestamp,\n\t\tUnitPrice as double,\n\t\tCustomerID as integer,\n\t\tCountry as string,\n\t\tDescription as string,\n\t\tCutomer_Name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tInvoiceNo,\n\t\tStockCode,\n\t\tQuantity,\n\t\tInvoiceDate,\n\t\tUnitPrice,\n\t\tCustomerID,\n\t\tCountry,\n\t\tDescription,\n\t\tCutomer_Name = Customer_Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink3"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Datalakesourcedataset",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable7",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Join1"
+						},
+						{
+							"name": "Select1"
+						}
+					],
+					"script": "source(output(\n\t\tInvoiceNo as string,\n\t\tStockCode as string,\n\t\tDescription as string,\n\t\tQuantity as string,\n\t\tInvoiceDate as string,\n\t\tUnitPrice as string,\n\t\tCustomerID as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource(output(\n\t\tCID as string,\n\t\tName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source2\nsource1, source2 join(CustomerID == CID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 select(mapColumn(\n\t\tInvoiceNo,\n\t\tStockCode,\n\t\tDescription,\n\t\tQuantity,\n\t\tInvoiceDate,\n\t\tUnitPrice,\n\t\tCustomerID,\n\t\tCountry,\n\t\tCustomerName = Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow3')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable8",
+								"type": "DatasetReference"
+							},
+							"name": "Customer1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable9",
+								"type": "DatasetReference"
+							},
+							"name": "Department"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable10",
+								"type": "DatasetReference"
+							},
+							"name": "HRSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable11",
+								"type": "DatasetReference"
+							},
+							"name": "FinanceSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Join1"
+						},
+						{
+							"name": "ConditionalSplit1"
+						},
+						{
+							"name": "HRSelect"
+						},
+						{
+							"name": "FinanceSelect"
+						}
+					],
+					"script": "source(output(\n\t\tCust_ID as integer,\n\t\tCustomer_Name as string,\n\t\tDept_ID as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Customer1\nsource(output(\n\t\tDept_ID as integer,\n\t\tDept_Name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Department\nCustomer1, Department join(Customer1@Dept_ID == Department@Dept_ID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 split(Dept_Name=='HR',\n\tdisjoint: false) ~> ConditionalSplit1@(HR, Finance)\nConditionalSplit1@HR select(mapColumn(\n\t\tCust_ID,\n\t\tCustomer_Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> HRSelect\nConditionalSplit1@Finance select(mapColumn(\n\t\tCust_ID,\n\t\tCustomer_Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> FinanceSelect\nHRSelect sink(input(\n\t\tCust_ID as integer,\n\t\tCustomer_Name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> HRSink\nFinanceSelect sink(input(\n\t\tCust_ID as integer,\n\t\tCustomer_Name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> FinanceSink"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable9')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow4')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DelimitedText2",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable12",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DerivedColumn1"
+						},
+						{
+							"name": "Select2"
+						},
+						{
+							"name": "Filter1"
+						}
+					],
+					"script": "source(output(\n\t\tEntry_ID as string,\n\t\t{State Patient Number} as string,\n\t\t{Date Announced} as string,\n\t\t{Age Bracket} as string,\n\t\tGender as string,\n\t\t{Detected City} as string,\n\t\t{Detected District} as string,\n\t\t{Detected State} as string,\n\t\t{State code} as string,\n\t\t{Num Cases} as string,\n\t\t{Current Status} as string,\n\t\t{Contracted from which Patient (Suspected)} as string,\n\t\tNotes as string,\n\t\tSource_1 as string,\n\t\tSource_2 as string,\n\t\tSource_3 as string,\n\t\tNationality as string,\n\t\t{Type of transmission} as string,\n\t\t{Status Change Date} as string,\n\t\t{Patient Number} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nFilter1 derive(Date_Anounced = coalesce(toDate({Date Announced},'MM/dd/yyyy'),toDate({Date Announced},'yyyy/MM/dd'),toDate({Date Announced},'dd/MM/yyyy'),toDate({Date Announced},'MMddyyyy'),toDate({Date Announced},'yyyyddMM'),toDate({Date Announced},'MMddyyyy'),toDate({Date Announced},'yyyyMMdd')),\n\t\tDetected_State_der = iif(isNull({Detected State}), 'NA', {Detected State}),\n\t\tDetected_District_der = iif(isNull({Detected District}), 'NA', {Detected District})) ~> DerivedColumn1\nDerivedColumn1 select(mapColumn(\n\t\tEntry_ID,\n\t\t{State Patient Number},\n\t\t{Age Bracket},\n\t\tGender,\n\t\t{Detected City},\n\t\t{State code},\n\t\t{Num Cases},\n\t\t{Current Status},\n\t\t{Contracted from which Patient (Suspected)},\n\t\tNotes,\n\t\tNationality,\n\t\tDate_Anounced,\n\t\tDetected_State_der,\n\t\tDetected_District_der\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nsource1 filter({Date Announced}!='NULL') ~> Filter1\nSelect2 sink(input(\n\t\tEntry_ID as integer,\n\t\tState_Patient_Number as string,\n\t\tDate_Announced as date,\n\t\tAge_Bracket as integer,\n\t\tGender as string,\n\t\tDetected_City as string,\n\t\tDetected_District as string,\n\t\tDetected_State as string,\n\t\tState_code as string,\n\t\tNum_Cases as integer,\n\t\tCurrent_Status as string,\n\t\tContracted_from_Patient_Suspected as string,\n\t\tNotes as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number = {State Patient Number},\n\t\tDate_Announced = Date_Anounced,\n\t\tAge_Bracket = {Age Bracket},\n\t\tGender,\n\t\tDetected_City = {Detected City},\n\t\tDetected_District = Detected_District_der,\n\t\tDetected_State = Detected_State_der,\n\t\tState_code = {State code},\n\t\tNum_Cases = {Num Cases},\n\t\tCurrent_Status = {Current Status},\n\t\tContracted_from_Patient_Suspected = {Contracted from which Patient (Suspected)},\n\t\tNotes\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable12')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow5')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable12",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable12",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable13",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Aggregate1"
+						},
+						{
+							"name": "Aggregate2"
+						},
+						{
+							"name": "Join1"
+						},
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "Join2"
+						},
+						{
+							"name": "Select2"
+						},
+						{
+							"name": "DerivedColumn1"
+						},
+						{
+							"name": "Select3"
+						}
+					],
+					"script": "source(output(\n\t\tEntry_ID as integer,\n\t\tState_Patient_Number as string,\n\t\tDate_Announced as date,\n\t\tAge_Bracket as integer,\n\t\tGender as string,\n\t\tDetected_City as string,\n\t\tDetected_District as string,\n\t\tDetected_State as string,\n\t\tState_code as string,\n\t\tNum_Cases as integer,\n\t\tCurrent_Status as string,\n\t\tContracted_from_Patient_Suspected as string,\n\t\tNotes as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource(output(\n\t\tEntry_ID as integer,\n\t\tState_Patient_Number as string,\n\t\tDate_Announced as date,\n\t\tAge_Bracket as integer,\n\t\tGender as string,\n\t\tDetected_City as string,\n\t\tDetected_District as string,\n\t\tDetected_State as string,\n\t\tState_code as string,\n\t\tNum_Cases as integer,\n\t\tCurrent_Status as string,\n\t\tContracted_from_Patient_Suspected as string,\n\t\tNotes as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source2\nsource1 aggregate(groupBy(Detected_State,\n\t\tDate_Announced),\n\t{Total Cases for State} = sum(Num_Cases)) ~> Aggregate1\nsource1 aggregate(groupBy(Detected_State,\n\t\tDetected_District,\n\t\tDate_Announced),\n\t{Total District Casess for Date and State} = sum(Num_Cases)) ~> Aggregate2\nsource2, Aggregate1 join(source2@Detected_State == Aggregate1@Detected_State\n\t&& source2@Date_Announced == Aggregate1@Date_Announced,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 select(mapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number,\n\t\tDate_Announced = source2@Date_Announced,\n\t\tAge_Bracket,\n\t\tGender,\n\t\tDetected_City,\n\t\tDetected_District,\n\t\tDetected_State = source2@Detected_State,\n\t\tState_code,\n\t\tNum_Cases,\n\t\tCurrent_Status,\n\t\tContracted_from_Patient_Suspected,\n\t\tNotes,\n\t\t{Total Cases for State}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1, Aggregate2 join(Select1@Detected_State == Aggregate2@Detected_State\n\t&& Select1@Detected_District == Aggregate2@Detected_District\n\t&& Select1@Date_Announced == Aggregate2@Date_Announced,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join2\nJoin2 select(mapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number,\n\t\tDate_Announced = Select1@Date_Announced,\n\t\tAge_Bracket,\n\t\tGender,\n\t\tDetected_City,\n\t\tDetected_District = Select1@Detected_District,\n\t\tDetected_State = Select1@Detected_State,\n\t\tState_code,\n\t\tNum_Cases,\n\t\tCurrent_Status,\n\t\tContracted_from_Patient_Suspected,\n\t\tNotes,\n\t\t{Total Cases for State},\n\t\t{Total District Casess for Date and State}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nSelect2 derive({Percent District Per Day Cases} = divide({Total District Casess for Date and State},{Total Cases for State})*100) ~> DerivedColumn1\nDerivedColumn1 select(mapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number,\n\t\tDate_Announced,\n\t\tAge_Bracket,\n\t\tGender,\n\t\tDetected_City,\n\t\tDetected_District,\n\t\tDetected_State,\n\t\tState_code,\n\t\tNum_Cases,\n\t\tCurrent_Status,\n\t\tContracted_from_Patient_Suspected,\n\t\tNotes,\n\t\tPercent_District_Per_Day_Cases = {Percent District Per Day Cases}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select3\nSelect3 sink(input(\n\t\tEntry_ID as integer,\n\t\tState_Patient_Number as string,\n\t\tDate_Announced as date,\n\t\tAge_Bracket as integer,\n\t\tGender as string,\n\t\tDetected_City as string,\n\t\tDetected_District as string,\n\t\tDetected_State as string,\n\t\tState_code as string,\n\t\tNum_Cases as integer,\n\t\tPercent_District_Per_Day_Cases as decimal(10,2),\n\t\tCurrent_Status as string,\n\t\tContracted_from_which_Patient_Suspected as string,\n\t\tNotes as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tEntry_ID,\n\t\tState_Patient_Number,\n\t\tDate_Announced,\n\t\tAge_Bracket,\n\t\tGender,\n\t\tDetected_City,\n\t\tDetected_District,\n\t\tDetected_State,\n\t\tState_code,\n\t\tNum_Cases,\n\t\tPercent_District_Per_Day_Cases,\n\t\tCurrent_Status,\n\t\tContracted_from_which_Patient_Suspected = Contracted_from_Patient_Suspected,\n\t\tNotes\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable12')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable13')]"
+			]
+		}
+	]
+}
